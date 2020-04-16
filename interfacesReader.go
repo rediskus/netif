@@ -17,7 +17,9 @@ type InterfacesReader struct {
 	context     int
 }
 
-func Parse(opts ...fn.Option) *InterfaceSet {
+func Parse(opts ...fn.Option) (*InterfaceSet, error) {
+	var err error
+
 	fnConfig := fn.MakeConfig(
 		fn.Defaults{"path": "/etc/network/interfaces"},
 		opts,
@@ -27,9 +29,11 @@ func Parse(opts ...fn.Option) *InterfaceSet {
 	is := &InterfaceSet{
 		InterfacesPath: path,
 	}
-	is.Adapters = NewInterfacesReader(is.InterfacesPath).ParseInterfaces()
+	if is.Adapters, err = NewInterfacesReader(is.InterfacesPath).ParseInterfaces(); err != nil {
+		return nil, err
+	}
 
-	return is
+	return is, nil
 }
 
 func NewInterfacesReader(filePath string) *InterfacesReader {
@@ -39,21 +43,21 @@ func NewInterfacesReader(filePath string) *InterfacesReader {
 	return &ir
 }
 
-func (ir *InterfacesReader) ParseInterfaces() []*NetworkAdapter {
+func (ir *InterfacesReader) ParseInterfaces() ([]*NetworkAdapter, error) {
 	// Reset this object in case is not new
 	ir.reset()
 
 	// Try to open the file
 	f, err := os.Open(ir.filePath)
 	if err != nil {
-		return nil
+		return nil, err
 	}
 	defer f.Close()
 
 	// Treat each line from the file
 	ir.readLinesFromFile(f)
 
-	return ir.parseInterfacesImplementation()
+	return ir.parseInterfacesImplementation(), nil
 }
 
 func (ir *InterfacesReader) parseInterfacesFromString(data string) {
@@ -168,6 +172,15 @@ func (ir *InterfacesReader) parseDetails(line string) {
 		if na.SetNetwork(sline[1]) != nil {
 			return
 		}
+	//[added] read dns-nameservers list
+	case "dns-nameservers":
+		//na.DNSNS = make([]net.IP, 0, 4)
+		for i := 1; i < len(sline); i++ {
+			if na.SetDNSNS(sline[i]) != nil {
+				continue
+			}
+		}
+		return
 	default:
 	}
 }
