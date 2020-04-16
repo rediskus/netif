@@ -13,16 +13,18 @@ import (
 func BackupPath(path string) fn.Option {
 	return fn.MakeOption("backupPath", path)
 }
-func (is *InterfaceSet) Write(opts ...fn.Option) error {
+
+//[changed] mgmtName added to append "ip addr flush" to management port settings
+func (is *InterfaceSet) Write(mgmtName string, opts ...fn.Option) error {
 	fnConfig := fn.MakeConfig(
-		fn.Defaults{"path": "output"},
+		fn.Defaults{"path": "/etc/network/interfaces"},
 		opts,
 	)
 	path := fnConfig.GetString("path")
 	backupPath := fnConfig.GetString("backupPath")
 
 	if backupPath == "" {
-		backupPath = path + ".backup"
+		backupPath = path + ".bak"
 	}
 
 	// Backup interface file
@@ -43,8 +45,10 @@ func (is *InterfaceSet) Write(opts ...fn.Option) error {
 		return err
 	}
 	defer f.Close()
+
 	// write interface file
-	err = is.WriteToFile(f)
+
+	err = is.WriteToFile(mgmtName, f)
 	if err != nil {
 		// Restore interface file
 		err := copyFileIfExists(backupPath, path)
@@ -53,7 +57,7 @@ func (is *InterfaceSet) Write(opts ...fn.Option) error {
 		}
 	}
 
-	return err
+	return nil
 }
 
 func copyFileIfExists(path, backupPath string) error {
@@ -66,13 +70,21 @@ func copyFileIfExists(path, backupPath string) error {
 	return nil
 }
 
-func (is *InterfaceSet) WriteToFile(f *os.File) error {
+//[changed] mgmtName added to append "ip addr flush" to management port settings
+func (is *InterfaceSet) WriteToFile(mgmtName string, f *os.File) error {
 	for _, adapter := range is.Adapters {
 		adapterString, err := adapter.writeString()
 		if err != nil {
 			return err
 		}
-		fmt.Fprintf(f, "%s\n\n", adapterString)
+
+		fmt.Fprintf(f, "%s", adapterString)
+
+		//[changed] mgmtName added to append "ip addr flush" to management port settings
+		if mgmtName != "" && adapter.Name == mgmtName {
+			fmt.Fprintf(f, "\n    post-down ip addr flush dev %s", mgmtName)
+		}
+		fmt.Fprintf(f, "\n\n")
 	}
 	return nil
 }
@@ -142,6 +154,13 @@ func (a *NetworkAdapter) writeIPLines() (lines []string) {
 	}
 	if a.Gateway != nil {
 		lines = append(lines, fmt.Sprintf("    gateway %s", a.Gateway))
+	}
+	if len(a.DNSNS) != 0 {
+		message := ""
+		for _, dnssvr := range a.DNSNS {
+			message = message + " " + dnssvr.String()
+		}
+		lines = append(lines, fmt.Sprintf("    dns-nameservers %s", message))
 	}
 	return
 }
