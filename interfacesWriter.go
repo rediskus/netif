@@ -14,7 +14,7 @@ func BackupPath(path string) fn.Option {
 	return fn.MakeOption("backupPath", path)
 }
 
-//[changed] mgmtName added to append "ip addr flush" to management port settings
+//[changed] mgmtName added to append "ip addr flush" to prevent duplicated IP settings
 func (is *InterfaceSet) Write(mgmtName string, opts ...fn.Option) error {
 	fnConfig := fn.MakeConfig(
 		fn.Defaults{"path": "/etc/network/interfaces"},
@@ -70,7 +70,7 @@ func copyFileIfExists(path, backupPath string) error {
 	return nil
 }
 
-//[changed] mgmtName added to append "ip addr flush" to management port settings
+//[changed] mgmtName added to append "ip addr flush" to prevent duplicated IP settings
 func (is *InterfaceSet) WriteToFile(mgmtName string, f *os.File) error {
 	for _, adapter := range is.Adapters {
 		adapterString, err := adapter.writeString()
@@ -80,7 +80,7 @@ func (is *InterfaceSet) WriteToFile(mgmtName string, f *os.File) error {
 
 		fmt.Fprintf(f, "%s", adapterString)
 
-		//[changed] mgmtName added to append "ip addr flush" to management port settings
+		//[changed] mgmtName added to append "ip addr flush" to prevent duplicated IP settings
 		if mgmtName != "" && adapter.Name == mgmtName {
 			fmt.Fprintf(f, "\n    post-down ip addr flush dev %s", mgmtName)
 		}
