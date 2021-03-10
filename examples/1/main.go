@@ -1,13 +1,13 @@
 package main
 
-import ni "github.com/Wifx/netif"
+import ni "github.com/swha12/netif"
 
 func main() {
-	is := ni.Parse(
+	is, _ := ni.Parse(
 		ni.Path("input"),
 	)
 
 	is.Write(
-		ni.Path("output"),
+		"eth0", ni.Path("output"),
 	)
 }

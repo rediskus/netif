@@ -145,7 +145,29 @@ func (ir *InterfacesReader) parseDetails(line string) {
 	// If line begins with a space, it's a interface attribute
 	if strings.TrimSpace(line)[0] == line[0] {
 		// Doesn't begin with space, pass
-		return
+		isAttr := false
+		sline := strings.Split(strings.TrimSpace(line), " ")
+		switch sline[0] {
+		case "address":
+			isAttr = true
+		case "netmask":
+			isAttr = true
+		case "network":
+			isAttr = true
+		case "broadcast":
+			isAttr = true
+		case "gateway":
+			isAttr = true
+		case "dns-nameservers":
+			isAttr = true
+		case "dns-domain":
+			isAttr = true
+		case "dns-search":
+			isAttr = true
+		}
+		if isAttr == false {
+			return
+		}
 	}
 
 	sline := strings.Split(strings.TrimSpace(line), " ")
