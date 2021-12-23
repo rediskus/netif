@@ -1,6 +1,6 @@
 # Netif
 
-Пакет для чтения/записи файла конфигурации сетевых устройств для большинства Linux дестрибутивов, основанных на Debian.
+Пакет для чтения/записи файла конфигурации сетевых устройств для большинства Linux дистрибутивов, основанных на Debian.
 
 Этот пакет изначально основан на библиотеке Python **Debinterface** [github.com/dggreenbaum/debinterface](https://github.com/dggreenbaum/debinterface "Debinterface github repository").
 
