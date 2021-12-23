@@ -34,7 +34,7 @@ func (is *InterfaceSet) Write(mgmtName string, opts ...fn.Option) error {
 	}
 
 	// try to open the interface file for writing
-	f, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0777)
+	f, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
 	if err != nil {
 		// Restore interface file
 		err := copyFileIfExists(backupPath, path)
@@ -106,6 +106,16 @@ func (a *NetworkAdapter) writeString() (string, error) {
 		}
 	}
 
+	if a.isBridge {
+		for _, line := range a.writeBridgeLines() {
+			lines = append(lines, line)
+		}
+	}
+
+	for _, line := range a.writeOther() {
+		lines = append(lines, line)
+	}
+
 	return strings.Join(lines, "\n"), nil
 }
 
@@ -163,4 +173,43 @@ func (a *NetworkAdapter) writeIPLines() (lines []string) {
 		lines = append(lines, fmt.Sprintf("    dns-nameservers %s", message))
 	}
 	return
+}
+
+func (a *NetworkAdapter) writeBridgeLines() (lines []string) {
+	if a.BridgePorts!=nil {
+		ports:="    bridge_ports"
+		for _,port:=range a.BridgePorts {
+			ports = ports + " " + port
+		}
+		lines = append(lines,ports)
+	}
+	lines = append(lines, "    bridge_waitport "+a.BridgeWaitport)
+
+	stp:="off"
+	if a.BridgeStp {
+		stp = "on"
+	}
+	lines = append(lines, "    bridge_stp "+stp)
+
+	lines = append(lines, "    bridge_fd "+a.BridgeFd)
+
+	lines = append(lines, "    bridge_maxwait "+a.BridgeMaxwait)
+
+	return lines
+}
+
+func (a *NetworkAdapter) writeOther() (lines []string) {
+	if a.PreUp!=nil {
+		preUp:="    pre-up"
+		for _,p:=range a.PreUp {
+			preUp = preUp + " " + p
+		}
+		lines = append(lines,preUp)
+	}
+
+	if a.Hostname!="" {
+		lines = append(lines, "    hostname "+a.Hostname)
+	}
+
+	return lines
 }

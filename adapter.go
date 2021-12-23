@@ -36,6 +36,15 @@ type NetworkAdapter struct {
 	AddrFamily AddrFamily
 	//[added] DNS namserver added to read/write dns-nameservers
 	DNSNS []net.IP
+	// dsk
+	isBridge       bool
+	BridgePorts    []string
+	BridgeWaitport string
+	BridgeFd       string
+	BridgeMaxwait  string
+	BridgeStp      bool
+	PreUp          []string
+	Hostname       string
 }
 
 func (na *NetworkAdapter) validateIP(strIP string) (net.IP, error) {

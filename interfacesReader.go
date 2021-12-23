@@ -5,7 +5,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/n-marshall/fn"
+"github.com/n-marshall/fn"
 )
 
 // TODO get rid of interfaceReader
@@ -164,6 +164,20 @@ func (ir *InterfacesReader) parseDetails(line string) {
 			isAttr = true
 		case "dns-search":
 			isAttr = true
+		case "bridge_ports":
+			isAttr = true
+		case "bridge_waitport":
+			isAttr = true
+		case "bridge_stp":
+			isAttr = true
+		case "bridge_fd":
+			isAttr = true
+		case "bridge_maxwait":
+			isAttr = true
+		case "pre-up":
+			isAttr = true
+		case "hostname":
+			isAttr = true
 		}
 		if isAttr == false {
 			return
@@ -202,7 +216,30 @@ func (ir *InterfacesReader) parseDetails(line string) {
 				continue
 			}
 		}
-		return
+	// dsk
+	case "bridge_ports":
+		for i:=1;i<len(sline);i++ {
+			na.BridgePorts = append(na.BridgePorts, sline[i])
+		}
+		na.isBridge = true
+	case "bridge_waitport":
+		na.BridgeWaitport = sline[1]
+	case "bridge_stp":
+		if strings.ToUpper(sline[1]) == "OFF" {
+			na.BridgeStp = false
+		} else {
+			na.BridgeStp = true
+		}
+	case "bridge_fd":
+		na.BridgeFd = sline[1]
+	case "bridge_maxwait":
+		na.BridgeMaxwait = sline[1]
+	case "pre-up":
+		for i:=1;i<len(sline);i++ {
+			na.PreUp = append(na.PreUp, sline[i])
+		}
+	case "hostname":
+		na.Hostname = sline[1]
 	default:
 	}
 }

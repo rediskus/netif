@@ -1,6 +1,6 @@
 package main
 
-import ni "github.com/swha12/netif"
+import ni "github.com/rediskus/netif"
 
 func main() {
 	is, _ := ni.Parse(

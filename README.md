@@ -1,19 +1,21 @@
 # Netif
 
-This is a simple Golang package for reading, manipulating and writing the /etc/network/interface file in most Debian based distributions.
+Пакет для чтения/записи файла конфигурации сетевых устройств для большинства Linux дестрибутивов, основанных на Debian.
 
-This package is heavily based on the Python library **Debinterface** [github.com/dggreenbaum/debinterface](https://github.com/dggreenbaum/debinterface "Debinterface github repository").
+Этот пакет изначально основан на библиотеке Python **Debinterface** [github.com/dggreenbaum/debinterface](https://github.com/dggreenbaum/debinterface "Debinterface github repository").
 
-### Installation
+Форк с [github.com/swha12/netif](https://github.com/swha12/netif)
+
+### Как установить:
 ```go
-go get github.com/hilt0n/netif
+go get github.com/rediskus/netif
 ```
 
-### Basic usage
+### Как использовать:
 ```go
 package main
 
 import (
-    "github.com/hilt0n/netif"
+    "github.com/rediskus/netif"
 )
 ```

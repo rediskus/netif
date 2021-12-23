@@ -1,0 +1,31 @@
+## interfaces
+auto lo
+iface lo inet loopback
+
+auto eth0
+iface eth0 inet manual
+
+allow-hotplug eth1
+iface eth1 inet dhcp
+    pre-up wb-set-mac
+    hostname WirenBoard
+
+allow-hotplug wlan0
+
+auto br0
+iface br0 inet static
+    address 10.0.6.110
+    broadcast 10.0.6.255
+    netmask 255.255.255.0
+    dns-nameservers 8.8.8.8 8.8.4.4
+    bridge_ports eth0 eth1
+    bridge_waitport 0
+    bridge_stp off
+    bridge_fd 0
+    bridge_maxwait 0
+
+allow-hotplug usb0
+iface usb0 inet dhcp
+    hostname WirenBoard
+
+
