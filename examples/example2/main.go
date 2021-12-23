@@ -3,16 +3,28 @@ package main
 import (
 	"fmt"
 	ni "github.com/rediskus/netif"
+	"net"
 )
 
 func main() {
 	i, _ := ni.Parse(ni.Path("./interfaces"))
-	for _, r := range i.Adapters {
-		fmt.Printf("Name %s\r\n", r.Name)
-		fmt.Printf("Network %s\r\n", r.Network)
-		fmt.Printf("Address %s\r\n", r.Address)
-		fmt.Printf("Netmask %s\r\n", r.Netmask)
-		fmt.Printf("Gateway %s\r\n", r.Gateway)
+	eth := i.FindAdapter("eth1")
+	if eth != nil {
+		fmt.Printf("Adapter found. Deleting...")
+		if i.DeleteAdapter(eth.Name) == true {
+			fmt.Println("done")
+		} else {
+			fmt.Println("error")
+		}
 	}
-	i.Write("eth1", ni.Path("./interfaces1"))
+	if e, err := i.AddAdapter("eth2"); err == nil {
+		e.AddrSource = ni.STATIC
+		e.Address = net.ParseIP("192.168.1.10")
+		e.Netmask = net.ParseIP("255.255.255.0")
+		e.Gateway = net.ParseIP("192.168.1.1")
+		e.Hotplug = true
+	} else {
+		fmt.Println(err.Error())
+	}
+	_ = i.Write("", ni.Path("./interfaces1"))
 }
