@@ -118,6 +118,11 @@ func (na *NetworkAdapter) SetConfigType(configType string) error {
 	return nil
 }
 
+func (na *NetworkAdapter) SetBridgePort(port string) {
+	na.BridgePorts = append(na.BridgePorts, port)
+	na.isBridge = true
+}
+
 func (na *NetworkAdapter) ParseAddressSource(AddressSource string) (AddrSource, error) {
 	// Parse the address source for an interface
 	var src AddrSource
@@ -161,4 +166,47 @@ func (na *NetworkAdapter) DNSConcatString() string {
 		}
 	}
 	return message
+}
+
+func (na *NetworkAdapter) GetAddrFamilyString() string {
+	switch na.AddrFamily {
+	case INET:
+		return "inet"
+	case INET6:
+		return "inet6"
+	}
+	return "inet"
+}
+
+func (na *NetworkAdapter) GetSourceFamilyString() string {
+	switch na.AddrSource {
+	case DHCP:
+		return "dhcp"
+	case STATIC:
+		return "static"
+	case LOOPBACK:
+		return "loopback"
+	case MANUAL:
+		return "manual"
+	}
+	return "dhcp"
+}
+
+func ip2string(ip net.IP) string {
+	if len(ip)>0 {
+		return ip.String()
+	}
+	return ""
+}
+
+func (na *NetworkAdapter) GetAddress() string {
+	return ip2string(na.Address)
+}
+
+func (na *NetworkAdapter) GetNetmask() string {
+	return ip2string(na.Netmask)
+}
+
+func (na *NetworkAdapter) GetGateway() string {
+	return ip2string(na.Gateway)
 }

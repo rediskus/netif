@@ -119,30 +119,6 @@ func (a *NetworkAdapter) writeString() (string, error) {
 	return strings.Join(lines, "\n"), nil
 }
 
-func (a *NetworkAdapter) GetAddrFamilyString() string {
-	switch a.AddrFamily {
-	case INET:
-		return "inet"
-	case INET6:
-		return "inet6"
-	}
-	return "inet"
-}
-
-func (a *NetworkAdapter) GetSourceFamilyString() string {
-	switch a.AddrSource {
-	case DHCP:
-		return "dhcp"
-	case STATIC:
-		return "static"
-	case LOOPBACK:
-		return "loopback"
-	case MANUAL:
-		return "manual"
-	}
-	return "dhcp"
-}
-
 func (a *NetworkAdapter) writeAddressFamily() string {
 	var familyStr = a.GetAddrFamilyString()
 	var sourceStr = a.GetSourceFamilyString()
