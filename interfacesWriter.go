@@ -178,7 +178,12 @@ func (a *NetworkAdapter) writeOther() (lines []string) {
 	if a.PreUp!=nil {
 		preUp:="    pre-up"
 		for _,p:=range a.PreUp {
-			preUp = preUp + " " + p
+			if p == ":" {
+				lines = append(lines,preUp)
+				preUp = "    pre-up"
+			} else {
+				preUp = preUp + " " + p
+			}
 		}
 		lines = append(lines,preUp)
 	}

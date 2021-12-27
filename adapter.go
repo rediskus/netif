@@ -123,6 +123,13 @@ func (na *NetworkAdapter) SetBridgePort(port string) {
 	na.isBridge = true
 }
 
+func (na *NetworkAdapter) SetPreUp(str string) {
+	if len(na.PreUp)>0 {
+		na.PreUp = append(na.PreUp,":")
+	}
+	na.PreUp = append(na.PreUp,str)
+}
+
 func (na *NetworkAdapter) ParseAddressSource(AddressSource string) (AddrSource, error) {
 	// Parse the address source for an interface
 	var src AddrSource

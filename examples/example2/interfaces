@@ -23,6 +23,8 @@ iface br0 inet static
     bridge_stp off
     bridge_fd 0
     bridge_maxwait 0
+    pre-up opt1
+    pre-up opt2 opt3 opt4
 
 allow-hotplug usb0
 iface usb0 inet dhcp

@@ -22,6 +22,9 @@ func main() {
 		e.Address = net.ParseIP("192.168.1.10")
 		e.Netmask = net.ParseIP("255.255.255.0")
 		e.Gateway = net.ParseIP("192.168.1.1")
+		e.SetPreUp("wb-gsm restart_if_broken")
+		e.SetPreUp("sleep 10")
+		e.SetPreUp("wb-gsm off")
 		e.Hotplug = true
 	} else {
 		fmt.Println(err.Error())

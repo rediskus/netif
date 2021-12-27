@@ -235,6 +235,9 @@ func (ir *InterfacesReader) parseDetails(line string) {
 	case "bridge_maxwait":
 		na.BridgeMaxwait = sline[1]
 	case "pre-up":
+		if len(na.PreUp)>0 {
+			na.PreUp = append(na.PreUp,":") // разделяем разные pre-up
+		}
 		for i:=1;i<len(sline);i++ {
 			na.PreUp = append(na.PreUp, sline[i])
 		}
