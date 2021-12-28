@@ -55,7 +55,12 @@ func (i *InterfaceSet) AddAdapter(name string) (*NetworkAdapter, error) {
 		return nil, fmt.Errorf("Adapter %s already exists",name)
 	}
 
-	var eth = NetworkAdapter{Name: name}
+	var eth = NetworkAdapter{
+		Name: name,
+		BridgeWaitport: "0",
+		BridgeFd: "0",
+		BridgeMaxwait: "0",
+	}
 
 	i.Adapters = append(i.Adapters,&eth)
 

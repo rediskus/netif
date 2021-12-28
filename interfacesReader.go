@@ -186,64 +186,65 @@ func (ir *InterfacesReader) parseDetails(line string) {
 
 	sline := strings.Split(strings.TrimSpace(line), " ")
 	na := ir.adapters[ir.context]
-
-	switch sline[0] {
-	case "address":
-		if na.SetAddress(sline[1]) != nil {
-			return
-		}
-	case "netmask":
-		if na.SetNetmask(sline[1]) != nil {
-			return
-		}
-	case "gateway":
-		if na.SetGateway(sline[1]) != nil {
-			return
-		}
-	case "broadcast":
-		if na.SetBroadcast(sline[1]) != nil {
-			return
-		}
-	case "network":
-		if na.SetNetwork(sline[1]) != nil {
-			return
-		}
-	//[added] read dns-nameservers list
-	case "dns-nameservers":
-		//na.DNSNS = make([]net.IP, 0, 4)
-		for i := 1; i < len(sline); i++ {
-			if na.SetDNSNS(sline[i]) != nil {
-				continue
+	if len(sline)>1 {
+		switch sline[0] {
+		case "address":
+			if na.SetAddress(sline[1]) != nil {
+				return
 			}
+		case "netmask":
+			if na.SetNetmask(sline[1]) != nil {
+				return
+			}
+		case "gateway":
+			if na.SetGateway(sline[1]) != nil {
+				return
+			}
+		case "broadcast":
+			if na.SetBroadcast(sline[1]) != nil {
+				return
+			}
+		case "network":
+			if na.SetNetwork(sline[1]) != nil {
+				return
+			}
+		//[added] read dns-nameservers list
+		case "dns-nameservers":
+			//na.DNSNS = make([]net.IP, 0, 4)
+			for i := 1; i < len(sline); i++ {
+				if na.SetDNSNS(sline[i]) != nil {
+					continue
+				}
+			}
+		// dsk
+		case "bridge_ports":
+			for i := 1; i < len(sline); i++ {
+				na.BridgePorts = append(na.BridgePorts, sline[i])
+			}
+			na.isBridge = true
+		case "bridge_waitport":
+			na.BridgeWaitport = sline[1]
+		case "bridge_stp":
+			if strings.ToUpper(sline[1]) == "OFF" {
+				na.BridgeStp = false
+			} else {
+				na.BridgeStp = true
+			}
+		case "bridge_fd":
+			na.BridgeFd = sline[1]
+		case "bridge_maxwait":
+			na.BridgeMaxwait = sline[1]
+		case "pre-up":
+			if len(na.PreUp) > 0 {
+				na.PreUp = append(na.PreUp, ":") // разделяем разные pre-up
+			}
+			for i := 1; i < len(sline); i++ {
+				na.PreUp = append(na.PreUp, sline[i])
+			}
+		case "hostname":
+			na.Hostname = sline[1]
+		default:
 		}
-	// dsk
-	case "bridge_ports":
-		for i:=1;i<len(sline);i++ {
-			na.BridgePorts = append(na.BridgePorts, sline[i])
-		}
-		na.isBridge = true
-	case "bridge_waitport":
-		na.BridgeWaitport = sline[1]
-	case "bridge_stp":
-		if strings.ToUpper(sline[1]) == "OFF" {
-			na.BridgeStp = false
-		} else {
-			na.BridgeStp = true
-		}
-	case "bridge_fd":
-		na.BridgeFd = sline[1]
-	case "bridge_maxwait":
-		na.BridgeMaxwait = sline[1]
-	case "pre-up":
-		if len(na.PreUp)>0 {
-			na.PreUp = append(na.PreUp,":") // разделяем разные pre-up
-		}
-		for i:=1;i<len(sline);i++ {
-			na.PreUp = append(na.PreUp, sline[i])
-		}
-	case "hostname":
-		na.Hostname = sline[1]
-	default:
 	}
 }
 
