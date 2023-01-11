@@ -96,8 +96,8 @@ func (na *NetworkAdapter) SetNetwork(address string) error {
 	return err
 }
 
-//SetDNSNS sets DNS Nameservers
-//[added]
+// SetDNSNS sets DNS Nameservers
+// [added]
 func (na *NetworkAdapter) SetDNSNS(address string) error {
 	addr, err := na.validateIP(address)
 	if err == nil {
@@ -124,10 +124,10 @@ func (na *NetworkAdapter) SetBridgePort(port string) {
 }
 
 func (na *NetworkAdapter) SetPreUp(str string) {
-	if len(na.PreUp)>0 {
-		na.PreUp = append(na.PreUp,":")
+	if len(na.PreUp) > 0 {
+		na.PreUp = append(na.PreUp, ":")
 	}
-	na.PreUp = append(na.PreUp,str)
+	na.PreUp = append(na.PreUp, str)
 }
 
 func (na *NetworkAdapter) ParseAddressSource(AddressSource string) (AddrSource, error) {
@@ -165,14 +165,26 @@ func (na *NetworkAdapter) ParseAddressFamily(AddressFamily string) (AddrFamily, 
 
 func (na *NetworkAdapter) DNSConcatString() string {
 	message := ""
+	lenDnss := len(na.DNSNS)
 	for indx, dns := range na.DNSNS {
-		if indx > 0 || indx < len(na.DNSNS)-1 {
+		if indx > 0 && indx < lenDnss {
 			message = message + "," + dns.String()
 		} else {
-			message = message + dns.String()
+			message = dns.String()
 		}
 	}
 	return message
+}
+
+func (na *NetworkAdapter) DNSStrings() []string {
+	lenDnss := len(na.DNSNS)
+	ret := make([]string, 0, lenDnss)
+	if lenDnss > 0 {
+		for _, dns := range na.DNSNS {
+			ret = append(ret, dns.String())
+		}
+	}
+	return ret
 }
 
 func (na *NetworkAdapter) GetAddrFamilyString() string {
@@ -200,7 +212,7 @@ func (na *NetworkAdapter) GetSourceFamilyString() string {
 }
 
 func ip2string(ip net.IP) string {
-	if len(ip)>0 {
+	if len(ip) > 0 {
 		return ip.String()
 	}
 	return ""
